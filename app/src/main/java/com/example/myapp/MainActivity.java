@@ -37,43 +37,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadData(View view) {
-        //Intent intent = new Intent(this, ClassifyStress.class);
-        //EditText editText = (EditText) findViewById(R.id.editTextTextPersonName);
-        //String message = editText.getText().toString();
-        //intent.putExtra(EXTRA_MESSAGE, message);
-        //startActivity(intent);
 
         // Read csv file
 
         try {
-            //File csvfile = new File(Environment.getExternalStorageDirectory() + "/data.csv");
-            //String csvfileString = this.getApplicationInfo().dataDir + File.separatorChar + "assets/data.csv";
-            //String csvfileString ="C:\\Users\\erikhu\\AndroidStudioProjects\\MyApp\\app\\src\\main\\assets\\data.csv";
-            //String csvfileString ="C:\\Users\\erikhu\\AndroidStudioProjects\\MyApp\\app\\src\\main\\assets\\data.csv";
-            String csvfileString ="src/main/assets/data.csv";
-            Log.d("LOADDATA", csvfileString);
-            //File csvfile = new File(csvfileString);
-            Log.d("LOADDATA", "YOOO1");
-            //Log.d("LOADDATA", csvfile.getAbsolutePath());
-            //FileReader filereader = new FileReader(csvfileString);
-            Log.d("LOADDATA", "YOOO2");
-            //CSVReader reader = new CSVReader(new FileReader(csvfile.getAbsolutePath()));
-            //CSVReader reader = new CSVReader(filereader);
-
             AssetManager mng = getApplicationContext().getAssets();
             InputStream is = mng.open("data.csv");
             CSVReader reader = new CSVReader(new InputStreamReader(is));
 
-            String[] nextLine;
-            Log.d("LOADDATA", "YOOO3");
-            while ((nextLine = reader.readNext()) != null) {
+            //String[] nextLine = reader.readNext()
+            int subsequenceSize = 10;
+            int numFeatures = 24;
+            double[][] subsequence = new double[subsequenceSize][numFeatures];
+            Log.d("HELLO", "yo2");
+            //while ((nextLine = reader.readNext()) != null) {
+            for (int i = 0; i < subsequenceSize; i++) {
+                Log.d("HELLO", "yo3");
+                String[] nextLine = reader.readNext();
+                Log.d("READING", nextLine[0]);
+                for (int j = 0; i < numFeatures; j++) {
+                    subsequence[i][j] = Double.parseDouble(nextLine[j]);
+                }
                 // nextLine[] is an array of values from the line
-                System.out.println(nextLine[0] + nextLine[1] + "etc...");
+                // System.out.println(nextLine[1] + nextLine[1]);
             }
+            //System.out.println(subsequence);
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, "The specified file was not found", Toast.LENGTH_SHORT).show();
         }
     }
-}
 
+    public void preprocess(double[] rawData) {
+
+        double[] preprocessedData;
+    }
+}
