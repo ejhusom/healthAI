@@ -45,23 +45,29 @@ public class MainActivity extends AppCompatActivity {
             InputStream is = mng.open("data.csv");
             CSVReader reader = new CSVReader(new InputStreamReader(is));
 
-            //String[] nextLine = reader.readNext()
             int subsequenceSize = 10;
-            int numFeatures = 24;
+            int numFeatures = 6;
             double[][] subsequence = new double[subsequenceSize][numFeatures];
-            Log.d("HELLO", "yo2");
+
+            double num;
+
             String[] nextLine;
             //while ((nextLine = reader.readNext()) != null) {
             for (int i = 0; i < subsequenceSize; i++) {
                 Log.d("HELLO", "yo3");
                 nextLine = reader.readNext();
-/*
-                for (int j = 0; i < numFeatures; j++) {
+
+                for (int j = 1; j < numFeatures; j++) {
+//                    num = Double.valueOf(nextLine[j]);
+//                    num = Double.parseDouble(nextLine[j]);
+//                    System.out.println(num);
                     subsequence[i][j] = Double.parseDouble(nextLine[j]);
                 }
-*/
+
                 // nextLine[] is an array of values from the line
-                System.out.println(nextLine[2] + nextLine[3]);
+//                System.out.println(nextLine[2] + nextLine[3]);
+//                System.out.println(subsequence[i][0]);
+                System.out.println(subsequence[i][0] + ", " + subsequence[i][1]);
             }
             //System.out.println(subsequence);
         } catch (Exception e) {
