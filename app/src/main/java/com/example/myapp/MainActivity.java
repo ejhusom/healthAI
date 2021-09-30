@@ -2,7 +2,9 @@ package com.example.myapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.view.View;
@@ -11,8 +13,19 @@ import android.widget.Toast;
 
 import com.opencsv.CSVReader;
 
+import org.jetbrains.annotations.NotNull;
+import org.tensorflow.lite.Interpreter;
+
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,14 +54,14 @@ public class MainActivity extends AppCompatActivity {
             InputStream is = mng.open("data.csv");
             CSVReader reader = new CSVReader(new InputStreamReader(is));
 
-            int subsequenceSize = 10;
-            int numRawFeatures = 6;
+            int subsequenceSize = 1;
+            int numRawFeatures = 3;
 //            double[][] subsequence = new double[subsequenceSize][numRawFeatures];
-            double[][] subsequence = new double[numRawFeatures][subsequenceSize];
+            float[][] subsequence = new float[numRawFeatures][subsequenceSize];
 
 
             String[] nextLine;
-            double[] preprocessedSubsequence;
+            float[] preprocessedSubsequence;
 
             // Looping through all data
             //while ((nextLine = reader.readNext()) != null) {
@@ -60,17 +73,42 @@ public class MainActivity extends AppCompatActivity {
 
                     // Saving each column as a row for easy access later
                     for (int j = 0; j < numRawFeatures; j++) {
-                        subsequence[j][i] = Double.parseDouble(nextLine[j+2]);
+                        subsequence[j][i] = Float.parseFloat(nextLine[j+5]);
                     }
 
 //                    System.out.println(subsequence[i][0] + ", " + subsequence[i][1]);
                 }
 
-                preprocessedSubsequence = preprocess(subsequence);
+                //preprocessedSubsequence = preprocess(subsequence);
 
 
-                //System.out.println(subsequence);
-                System.out.println(preprocessedSubsequence);
+                System.out.println(subsequence);
+                //System.out.println(preprocessedSubsequence);
+
+                Interpreter tflite;
+                android.app.Activity activity;
+                tflite = new Interpreter(loadModelFile());
+
+
+                int[] inputShape = tflite.getInputTensor(0).shape();
+                int[] outputShape = tflite.getOutputTensor(0).shape();
+                System.out.println("INPUTSHAPE:");
+                System.out.println(inputShape[0]);
+                System.out.println(inputShape[1]);
+                System.out.println("OUTPUTSHAPE:");
+                System.out.println(outputShape[0]);
+                System.out.println(outputShape[1]);
+
+
+//                Map<String, Object> inputs = new HashMap<>();
+//                inputs.put("input_1", subsequence[0]);
+//                inputs.put("input_2", subsequence[1]);
+//                inputs.put("input_3", subsequence[2]);
+//                inputs.put("input_4", subsequence[3]);
+//                inputs.put("input_5", subsequence[4]);
+//                inputs.put("input_6", subsequence[5]);
+//
+//                tflite.run(inputs);
             }
 
         } catch (Exception e) {
@@ -79,11 +117,56 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public double[] preprocess(double[][] rawData) {
+    public void inference() {
+
+/*
+        Object[] inputs = {input0, input1, ...};
+        Map<Integer, Object> map_of_indices_to_outputs = new HashMap <>();
+        FloatBuffer ith_output = FloatBuffer.allocateDirect(3 * 2 * 4);  // Float tensor, shape 3x2x4.
+        ith_output.order(ByteOrder.nativeOrder());
+        map_of_indices_to_outputs.put(i, ith_output);
+        try (Interpreter interpreter = new Interpreter(file_of_a_tensorflowlite_model)) {
+            interpreter.runForMultipleInputsOutputs(inputs, map_of_indices_to_outputs);
+        }
+*/
+
+/*
+        protected Interpreter tflite;
+        android.app.Activity activity;
+        tflite = new Interpreter(loadModelFile(activity));
+        tflite.run();
+*/
+
+
+/*
+        try (Interpreter interpreter = new Interpreter(file_of_tensorflowlite_model)) {
+            Map<String, Object> inputs = new HashMap<>();
+            inputs.put("input_1", input1);
+            inputs.put("input_2", input2);
+            Map<String, Object> outputs = new HashMap<>();
+            outputs.put("output_1", output1);
+            interpreter.runSignature(inputs, outputs, "mySignature");
+        }
+*/
+
+    }
+
+    private MappedByteBuffer loadModelFile() throws IOException {
+//        private MappedByteBuffer loadModelFile(Activity activity) throws IOException {
+
+        AssetFileDescriptor fileDescriptor = getApplicationContext().getAssets().openFd("model.tflite");
+        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+        FileChannel fileChannel = inputStream.getChannel();
+        long startOffset = fileDescriptor.getStartOffset();
+        long declaredLength = fileDescriptor.getDeclaredLength();
+        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
+    }
+
+    public float[] preprocess(float[][] rawData) {
 
         int numRawFeatures = rawData[1].length;
         int numFeatures = 3 * numRawFeatures;
-        double[] preprocessedData = new double[numFeatures];
+        float[] preprocessedData = new float[numFeatures];
 
         int idx = 0;
 
@@ -97,21 +180,21 @@ public class MainActivity extends AppCompatActivity {
         return preprocessedData;
     }
 
-    public static double calculateMean(double[] array) {
-        double mean;
-        double sum = 0;
+    public static float calculateMean(float[] array) {
+        float mean;
+        float sum = 0;
 
         for (int i = 0; i < array.length; i++) {
             sum += array[i];
         }
 
-        mean = sum / (double)array.length;
+        mean = sum / (float)array.length;
 
         return mean;
     }
 
-    public static double findMin(double[] array) {
-        double min = array[0];
+    public static float findMin(float[] array) {
+        float min = array[0];
 
         for (int i = 1; i < array.length; i++) {
             if (array[i] < min) {
@@ -122,8 +205,8 @@ public class MainActivity extends AppCompatActivity {
         return min;
     }
 
-    public static double findMax(double[] array) {
-        double max = array[0];
+    public static float findMax(float[] array) {
+        float max = array[0];
 
         for (int i = 1; i < array.length; i++) {
             if (array[i] > max) {
