@@ -50,16 +50,18 @@ public class MainActivity extends AppCompatActivity {
             int numFeatures = 24;
             double[][] subsequence = new double[subsequenceSize][numFeatures];
             Log.d("HELLO", "yo2");
+            String[] nextLine;
             //while ((nextLine = reader.readNext()) != null) {
             for (int i = 0; i < subsequenceSize; i++) {
                 Log.d("HELLO", "yo3");
-                String[] nextLine = reader.readNext();
-                Log.d("READING", nextLine[0]);
+                nextLine = reader.readNext();
+/*
                 for (int j = 0; i < numFeatures; j++) {
                     subsequence[i][j] = Double.parseDouble(nextLine[j]);
                 }
+*/
                 // nextLine[] is an array of values from the line
-                // System.out.println(nextLine[1] + nextLine[1]);
+                System.out.println(nextLine[2] + nextLine[3]);
             }
             //System.out.println(subsequence);
         } catch (Exception e) {
