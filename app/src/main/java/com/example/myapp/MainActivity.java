@@ -49,25 +49,26 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadData(View view) {
 
-        // Read csv file
-
         try {
             AssetManager mng = getApplicationContext().getAssets();
-            InputStream is = mng.open("data.csv");
+            InputStream is = mng.open("data3.csv");
             CSVReader reader = new CSVReader(new InputStreamReader(is));
 
             int subsequenceSize = 1;
             int numRawFeatures = 3;
-            float[][] subsequence = new float[subsequenceSize][numRawFeatures];
+//            float[][] subsequence = new float[subsequenceSize][numRawFeatures];
 //            float[][] subsequence = new float[numRawFeatures][subsequenceSize];
+            float[] subsequence = new float[numRawFeatures];
 
 
             String[] nextLine;
             float[] preprocessedSubsequence;
 
+            int counter = 0;
+            int true_value = 0;
             // Looping through all data
             //while ((nextLine = reader.readNext()) != null) {
-            for (int k = 0; k < 1; k++) {
+            for (int k = 0; k < 300; k++) {
 
                 // Loop to get subsequence of input data
                 for (int i = 0; i < subsequenceSize; i++) {
@@ -75,26 +76,24 @@ public class MainActivity extends AppCompatActivity {
 
                     // Saving each column as a row for easy access later
                     for (int j = 0; j < numRawFeatures; j++) {
-                        subsequence[i][j] = Float.parseFloat(nextLine[j+5]);
+//                        System.out.println("ROW NUMBER");
+//                        System.out.println(nextLine[0]);
+//                        subsequence[i][j] = Float.parseFloat(nextLine[j+5]);
 //                        subsequence[j][i] = Float.parseFloat(nextLine[j+5]);
+                        subsequence[j] = Float.parseFloat(nextLine[j+5]);
+                        true_value = Integer.parseInt(nextLine[1]);
                     }
-
 //                    System.out.println(subsequence[i][0] + ", " + subsequence[i][1]);
                 }
-
                 //preprocessedSubsequence = preprocess(subsequence);
-
-
-                System.out.println(subsequence);
+//                System.out.println(subsequence[0][0]);
                 //System.out.println(preprocessedSubsequence);
 
-                Interpreter tflite;
-                android.app.Activity activity;
-                tflite = new Interpreter(loadModelFile());
-
+                Interpreter tflite = new Interpreter(loadModelFile());
 
                 int[] inputShape = tflite.getInputTensor(0).shape();
                 int[] outputShape = tflite.getOutputTensor(0).shape();
+/*
                 System.out.println("INPUTSHAPE:");
                 System.out.println(inputShape[0]);
                 System.out.println(inputShape[1]);
@@ -103,16 +102,38 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println(outputShape[1]);
                 System.out.println("SUBSEQSHAPE:");
                 System.out.println(subsequence[0].length);
+*/
 
+                DataType inputDataType = tflite.getInputTensor(0).dataType();
+                TensorBuffer inputBuffer = TensorBuffer.createFixedSize(inputShape, inputDataType);
+                inputBuffer.loadArray(subsequence);
+                System.out.println(("INPUT"));
+                System.out.println(inputBuffer.getFloatArray()[0]);
+                System.out.println(inputBuffer.getFloatArray()[1]);
+                System.out.println(inputBuffer.getFloatArray()[2]);
                 DataType probabilityDataType = tflite.getOutputTensor(0).dataType();
-
                 TensorBuffer outputProbabilityBuffer = TensorBuffer.createFixedSize(outputShape, probabilityDataType);
-
-
-                tflite.run(subsequence, outputProbabilityBuffer.getBuffer());
+                tflite.run(inputBuffer.getBuffer(), outputProbabilityBuffer.getBuffer());
+//                tflite.run(inputBuffer.getFloatArray(), outputProbabilityBuffer.getFloatArray());
 //                tflite.run(inputBuffer.getBuffer(), outputProbabilityBuffer.getBuffer().rewind());
 
-                System.out.println(outputProbabilityBuffer.getFloatArray()[0]);
+
+//                System.out.println("COUNTER:");
+//                System.out.println(counter);
+                counter += 1;
+
+                float output = outputProbabilityBuffer.getFloatArray()[0];
+
+                System.out.println("Prediction:");
+                System.out.println(output);
+                System.out.println("True:");
+                System.out.println(true_value);
+
+//                if (output > 0.0) {
+//
+//                    System.out.println("Prediction:");
+//                    System.out.println(output);
+//                }
 
 //                Map<String, Object> inputs = new HashMap<>();
 //                inputs.put("input_1", subsequence[0]);
