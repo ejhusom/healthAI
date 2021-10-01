@@ -14,7 +14,9 @@ import android.widget.Toast;
 import com.opencsv.CSVReader;
 
 import org.jetbrains.annotations.NotNull;
+import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.Interpreter;
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -56,8 +58,8 @@ public class MainActivity extends AppCompatActivity {
 
             int subsequenceSize = 1;
             int numRawFeatures = 3;
-//            double[][] subsequence = new double[subsequenceSize][numRawFeatures];
-            float[][] subsequence = new float[numRawFeatures][subsequenceSize];
+            float[][] subsequence = new float[subsequenceSize][numRawFeatures];
+//            float[][] subsequence = new float[numRawFeatures][subsequenceSize];
 
 
             String[] nextLine;
@@ -73,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
 
                     // Saving each column as a row for easy access later
                     for (int j = 0; j < numRawFeatures; j++) {
-                        subsequence[j][i] = Float.parseFloat(nextLine[j+5]);
+                        subsequence[i][j] = Float.parseFloat(nextLine[j+5]);
+//                        subsequence[j][i] = Float.parseFloat(nextLine[j+5]);
                     }
 
 //                    System.out.println(subsequence[i][0] + ", " + subsequence[i][1]);
@@ -98,7 +101,18 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("OUTPUTSHAPE:");
                 System.out.println(outputShape[0]);
                 System.out.println(outputShape[1]);
+                System.out.println("SUBSEQSHAPE:");
+                System.out.println(subsequence[0].length);
 
+                DataType probabilityDataType = tflite.getOutputTensor(0).dataType();
+
+                TensorBuffer outputProbabilityBuffer = TensorBuffer.createFixedSize(outputShape, probabilityDataType);
+
+
+                tflite.run(subsequence, outputProbabilityBuffer.getBuffer());
+//                tflite.run(inputBuffer.getBuffer(), outputProbabilityBuffer.getBuffer().rewind());
+
+                System.out.println(outputProbabilityBuffer.getFloatArray()[0]);
 
 //                Map<String, Object> inputs = new HashMap<>();
 //                inputs.put("input_1", subsequence[0]);
