@@ -15,6 +15,7 @@
         android:ems="10"
         android:hint="@string/edit_message"
         android:inputType="textPersonName"
+        android:visibility="invisible"
         app:layout_constraintEnd_toStartOf="@+id/button2"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,10 +29,12 @@
         android:layout_marginEnd="16dp"
         android:onClick="sendMessage"
         android:text="@string/button_send"
+        android:visibility="invisible"
         app:layout_constraintBaseline_toBaselineOf="@+id/editTextTextPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/editTextTextPersonName" />
+        app:layout_constraintStart_toEndOf="@+id/editTextTextPersonName"
+        tools:visibility="invisible" />
 
     <Button
         android:id="@+id/button3"
@@ -49,9 +52,28 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:text="Stress Level:"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button3" />
+        app:layout_constraintTop_toBottomOf="@+id/button3"
+        tools:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/stressLevelValueTextField"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="155dp"
+        android:layout_marginTop="248dp"
+        android:layout_marginEnd="155dp"
+        android:layout_marginBottom="155dp"
+        android:text="0"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button3"
+        tools:visibility="invisible" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
