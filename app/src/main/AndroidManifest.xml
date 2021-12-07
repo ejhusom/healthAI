@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.myapp">
+    package="no.sintef.giot.bhp">
 
     <application
         android:allowBackup="true"
@@ -10,14 +10,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApp">
         <activity
-            android:name=".ClassifyStress"
+            android:name="no.sintef.giot.bhp.ClassifyStress"
             android:exported="true" />
         <activity
-            android:name=".DisplayMessageActivity"
+            android:name="no.sintef.giot.bhp.DisplayMessageActivity"
             android:exported="true"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName="no.sintef.giot.bhp.MainActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name="no.sintef.giot.bhp.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
