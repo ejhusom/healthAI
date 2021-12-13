@@ -4,23 +4,32 @@ import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.opencsv.CSVReader;
+import com.opencsv.bean.CsvToBeanBuilder;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.List;
+
+import no.sintef.giot.bhp.sqlite.DBHelper;
+import no.sintef.giot.bhp.sqlite.HeartRateVariability;
+
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 public class MainActivity extends AppCompatActivity {
+
+  private static final String TAG = "MainActivity";
 
   public static final String EXTRA_MESSAGE = "no.sintef.giot.bhp.BHP";
   TextView stressLevelTextView;
@@ -83,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
   public void loadData(View view) {
 
     try {
+
       AssetManager mng = getApplicationContext().getAssets();
       InputStream is = mng.open("data3.csv");
       CSVReader reader = new CSVReader(new InputStreamReader(is));
@@ -92,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
       // float[][] subsequence = new float[subsequenceSize][numRawFeatures];
       // float[][] subsequence = new float[numRawFeatures][subsequenceSize];
       float[] subsequence = new float[numRawFeatures];
-
 
       String[] nextLine;
       float[] preprocessedSubsequence;
@@ -260,4 +269,30 @@ public class MainActivity extends AppCompatActivity {
   //
   //    return var;
   //  }
+
+  public void loadSQLite(View view) {
+
+    try {
+      AssetManager mng = getApplicationContext().getAssets();
+      InputStream is = mng.open("hrv.csv");
+
+      // Get singleton instance of database
+      DBHelper dbHelper = DBHelper.getInstance(this);
+      List<HeartRateVariability> beans = new CsvToBeanBuilder(new CSVReader(new InputStreamReader(is)))
+          //.withSkipLines(1)
+          .withType(HeartRateVariability.class)
+          .build()
+          .parse();
+      dbHelper.addNewEntries(beans);
+      //for (HeartRateVariability hrvBean : beans) {
+      // Add hrv entry to the database
+      //  dbHelper.addNewEntry(hrvBean);
+      //}
+      Log.d(TAG, String.valueOf(dbHelper.getAllEntries().size()));
+
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage(), e);
+      Toast.makeText(this, "The specified file was not found", Toast.LENGTH_SHORT).show();
+    }
+  }
 }
