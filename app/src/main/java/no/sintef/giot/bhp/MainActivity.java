@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
       // Add hrv entry to the database
       //  dbHelper.addNewEntry(hrvBean);
       //}
-      Log.d(TAG, String.valueOf(dbHelper.getAllEntries().size()));
+      Log.d(TAG, String.valueOf(dbHelper.getAllEntriesFromTo("2021-11-28T08:45:00", "2021-11-28T09:45:00").size()));
 
     } catch (Exception e) {
       Log.e(TAG, e.getMessage(), e);

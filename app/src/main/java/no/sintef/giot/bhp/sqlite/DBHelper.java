@@ -106,6 +106,7 @@ public class DBHelper extends SQLiteOpenHelper {
     // our sqlite database and calling writable method
     // as we are writing data in our database.
     SQLiteDatabase db = this.getWritableDatabase();
+    db.execSQL("delete from "+ TABLE_NAME);
 
     for (HeartRateVariability hrv : aHrvList) {
       // on below line we are creating a
@@ -161,6 +162,41 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor.close();
       }
     }
+    return hrvEntries;
+  }
+
+  public List<HeartRateVariability> getAllEntriesFromTo(String aFrom, String aTo) {
+    List<HeartRateVariability> hrvEntries = new ArrayList<>();
+
+    // SELECT ALL FROM hrv_table
+    String HRV_SELECT_QUERY =
+        String.format("SELECT * FROM %s WHERE DATETIME(timestamp) BETWEEN DATETIME('%s') AND DATETIME('%s')",
+            TABLE_NAME, aFrom, aTo);
+
+    // "getReadableDatabase()" and "getWriteableDatabase()" return the same object (except under low
+    // disk space scenarios)
+    SQLiteDatabase db = getReadableDatabase();
+    Cursor cursor = db.rawQuery(HRV_SELECT_QUERY, null);
+    try {
+      if (cursor.moveToFirst()) {
+        do {
+          HeartRateVariability hrv = new HeartRateVariability();
+          hrv.setTimestamp(cursor.getString(cursor.getColumnIndex(TIMESTAMP_COL)));
+          hrv.setCoverage(cursor.getString(cursor.getColumnIndex(COVERAGE_COL)));
+          hrv.setRmssd(cursor.getString(cursor.getColumnIndex(RMSSD_COL)));
+          hrv.setLowFrequency(cursor.getString(cursor.getColumnIndex(LOW_FREQUENCY_COL)));
+          hrv.setHighFrequency(cursor.getString(cursor.getColumnIndex(HIGH_FREQUENCY_COL)));
+          hrvEntries.add(hrv);
+        } while (cursor.moveToNext());
+      }
+    } catch (Exception e) {
+      Log.d(TAG, "Error while trying to get HRV entries from database");
+    } finally {
+      if (cursor != null && !cursor.isClosed()) {
+        cursor.close();
+      }
+    }
+    Log.d(TAG, String.valueOf(hrvEntries.size()) + " entries found!");
     return hrvEntries;
   }
 
