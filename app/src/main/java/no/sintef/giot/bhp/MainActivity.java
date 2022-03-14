@@ -10,6 +10,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+//import com.chaquo.python.PyException;
+import com.chaquo.python.PyException;
+import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
+
 import com.opencsv.CSVReader;
 import com.opencsv.bean.CsvToBeanBuilder;
 import java.io.FileInputStream;
@@ -74,6 +80,44 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
+    //Start python
+    if (! Python.isStarted()) {
+      Python.start(new AndroidPlatform(this));
+    }
+    Python py = Python.getInstance();
+
+    // Obtain the system's input stream (available from Chaquopy)
+    PyObject sys = py.getModule("sys");
+    PyObject io = py.getModule("io");
+    // Obtain the right python module
+    PyObject module = py.getModule("inference");
+
+    // Redirect the system's output stream to the Python interpreter
+    PyObject textOutputStream = io.callAttr("StringIO");
+    sys.put("stdout", textOutputStream);
+
+    // Create a string variable that will contain the standard output of the Python interpreter
+    String interpreterOutput = "";
+
+    // 7. Execute the Python code
+    try {
+      module.callAttrThrows("main", "hrv.csv");
+      interpreterOutput = textOutputStream.callAttr("getvalue").toString();
+    } catch (PyException e){
+      // If there's an error, you can obtain its output as well
+      // e.g. if you mispell the code
+      // Missing parentheses in call to 'print'
+      // Did you mean print("text")?
+      // <string>, line 1
+      interpreterOutput = e.getMessage().toString();
+    } catch (Throwable throwable) {
+      throwable.printStackTrace();
+    }
+
+    // Outputs in the case of the fibonacci script:
+    Log.i(TAG, "RESULT: " + interpreterOutput);
+
 
     stressLevelTextView = findViewById(R.id.stressLevelValueTextField);
   }
