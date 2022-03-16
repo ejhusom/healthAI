@@ -78,6 +78,17 @@ def train_model(model, X, y):
 
     return model
 
+def main(filepath):
+    # filepath = "~/OneDrive/Datasets/Fitbit/fitbit_export_partners/original_data/fitbit_subject_01/Sleep/Heart Rate Variability Details - 2021-11-26.csv"
+    #filepath = sys.argv[1]
+
+    X, y = create_training_data(join(dirname(__file__), filepath))
+    X, mean, std = scale_data(X)
+    np.savez(join(dirname(__file__), "scaler-lite.npz"), mean=mean, std=std)
+    model = build_model(input_size=X.shape[1])
+    model = train_model(model, X, y)
+    model.save(join(dirname(__file__), "model-lite.h5"))
+
 
 if __name__ == '__main__': 
 
