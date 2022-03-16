@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
 
     //Start python
-    if (! Python.isStarted()) {
+    /*if (! Python.isStarted()) {
       Python.start(new AndroidPlatform(this));
     }
     Python py = Python.getInstance();
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
     // Create a string variable that will contain the standard output of the Python interpreter
     String interpreterOutput = "";
 
-    // 7. Execute the Python code
+    // Execute the Python code
     try {
       module.callAttrThrows("main", "hrv.csv");
       interpreterOutput = textOutputStream.callAttr("getvalue").toString();
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Outputs in the case of the fibonacci script:
-    Log.i(TAG, "RESULT: " + interpreterOutput);
+    Log.i(TAG, "RESULT: " + interpreterOutput);*/
 
 
     stressLevelTextView = findViewById(R.id.stressLevelValueTextField);
@@ -237,7 +237,44 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
-  public void inference() {
+  public void inference(View view) {
+
+    //Start python
+    if (! Python.isStarted()) {
+      Python.start(new AndroidPlatform(this));
+    }
+    Python py = Python.getInstance();
+
+    // Obtain the system's input stream (available from Chaquopy)
+    PyObject sys = py.getModule("sys");
+    PyObject io = py.getModule("io");
+    // Obtain the right python module
+    PyObject module = py.getModule("inference");
+
+    // Redirect the system's output stream to the Python interpreter
+    PyObject textOutputStream = io.callAttr("StringIO");
+    sys.put("stdout", textOutputStream);
+
+    // Create a string variable that will contain the standard output of the Python interpreter
+    String interpreterOutput = "";
+
+    // Execute the Python code
+    try {
+      module.callAttrThrows("main", "hrv.csv");
+      interpreterOutput = textOutputStream.callAttr("getvalue").toString();
+    } catch (PyException e){
+      // If there's an error, you can obtain its output as well
+      // e.g. if you mispell the code
+      // Missing parentheses in call to 'print'
+      // Did you mean print("text")?
+      // <string>, line 1
+      interpreterOutput = e.getMessage().toString();
+    } catch (Throwable throwable) {
+      throwable.printStackTrace();
+    }
+
+    // Outputs in the case of the fibonacci script:
+    Log.i(TAG, "RESULT: " + interpreterOutput);
 
   /*
         Object[] inputs = {input0, input1, ...};

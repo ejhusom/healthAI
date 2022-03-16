@@ -37,7 +37,7 @@ def read_data_from_file(filepath):
     X = np.asarray(X).astype(np.float32)
 
     # Print results
-    print(X)
+    # print(X)
 
     return X
 
