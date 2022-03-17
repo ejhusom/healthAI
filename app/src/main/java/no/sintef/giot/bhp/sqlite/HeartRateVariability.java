@@ -17,10 +17,10 @@ public class HeartRateVariability {
   private String coverage;
 
   @CsvBindByName(column = "low_frequency")
-  private String lowFrequency;
+  private String low_frequency;
 
   @CsvBindByName(column = "high_frequency")
-  private String highFrequency;
+  private String high_frequency;
 
   //  getters, setters, toString
 
@@ -84,7 +84,7 @@ public class HeartRateVariability {
    * @return low frequency
    */
   public String getLowFrequency() {
-    return this.lowFrequency;
+    return this.low_frequency;
   }
 
   /**
@@ -93,7 +93,7 @@ public class HeartRateVariability {
    * @param aLowFrequency low frequency
    */
   public void setLowFrequency(String aLowFrequency) {
-    this.lowFrequency = aLowFrequency;
+    this.low_frequency = aLowFrequency;
   }
 
   /**
@@ -102,7 +102,7 @@ public class HeartRateVariability {
    * @return high frequency
    */
   public String getHighFrequency() {
-    return this.highFrequency;
+    return this.high_frequency;
   }
 
   /**
@@ -111,7 +111,7 @@ public class HeartRateVariability {
    * @param aHighFrequency high frequency
    */
   public void setHighFrequency(String aHighFrequency) {
-    this.highFrequency = aHighFrequency;
+    this.high_frequency = aHighFrequency;
   }
 
   @Override
@@ -120,8 +120,8 @@ public class HeartRateVariability {
             "timestamp='" + timestamp + '\'' +
             ", rmssd='" + rmssd + '\'' +
             ", coverage='" + coverage + '\'' +
-            ", lowFrequency='" + lowFrequency + '\'' +
-            ", highFrequency='" + highFrequency + '\'' +
+            ", low_frequency='" + low_frequency + '\'' +
+            ", high_frequency='" + high_frequency + '\'' +
             '}';
   }
 }
