@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     ServiceLoader<LoadDataService> loader = ServiceLoader.load(LoadDataService.class);
     Log.i(TAG, "Found service implementations: ");
     for (LoadDataService ld : loader) {
+      Log.i(TAG, ld.getClass().toString());
       Log.i(TAG, ld.getData());
     }
   }
