@@ -42,7 +42,29 @@ def read_data_from_file(filepath):
 
     return X
 
-def read_data_from_string(input_string):
+def read_data_from_csv_string(input_string):
+    """Read data from csv-string.
+
+    Args:
+        input_string (str): Data passed as a string in csv format.
+
+    Returns:
+        X (array): Predictors, which is the input to a machine learning model.
+
+    """
+
+    df = pd.read_csv(StringIO(input_string))
+
+    # Create predictors (skip the first column, which contains the timestamps)
+    X = df.to_numpy()[:,1:]
+    X = np.asarray(X).astype(np.float32)
+
+    # Print results
+    # print(X)
+
+    return X
+
+def read_data_from_csv_string(input_string):
     """Read data from string.
 
     Args:
@@ -108,7 +130,7 @@ def infer(model, X):
 def infer_from_string(string):
 
     # Load data
-    X = read_data_from_string(string)
+    X = read_data_from_csv_string(string)
 
     # Load model
     model_filepath = "model.h5"
