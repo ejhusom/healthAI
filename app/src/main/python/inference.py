@@ -9,6 +9,7 @@ Created:
     2022-02-25
 
 """
+from io import StringIO
 import sys
 
 import matplotlib.pyplot as plt
@@ -32,7 +33,7 @@ def read_data_from_file(filepath):
 
     df = pd.read_csv(join(dirname(__file__), filepath))
 
-    # Create predictors (skip the first column, which is the timestamps)
+    # Create predictors (skip the first column, which contains the timestamps)
     X = df.to_numpy()[:,1:]
     X = np.asarray(X).astype(np.float32)
 
@@ -41,18 +42,27 @@ def read_data_from_file(filepath):
 
     return X
 
-def read_data_from_command_line(input_string):
-    """Read data from filepath.
+def read_data_from_string(input_string):
+    """Read data from string.
 
     Args:
-        input_string (str): Data passed as a string from the command line.
+        input_string (str): Data passed as a string.
 
     Returns:
         X (array): Predictors, which is the input to a machine learning model.
 
     """
 
-    return None
+    df = pd.read_csv(StringIO(input_string))
+
+    # Create predictors (skip the first column, which contains the timestamps)
+    X = df.to_numpy()[:,1:]
+    X = np.asarray(X).astype(np.float32)
+
+    # Print results
+    # print(X)
+
+    return X
 
 def preprocess_data():
     pass
@@ -95,6 +105,27 @@ def infer(model, X):
 
     return y
 
+def infer_from_string(string):
+
+    # Load data
+    X = read_data_from_string(string)
+
+    # Load model
+    model_filepath = "model.h5"
+    model = models.load_model(join(dirname(__file__), model_filepath), compile = False) # added extra argument compile = False
+
+    # Load scaler
+    scaler = np.load(join(dirname(__file__), "scaler.npz"))
+    mean = scaler["mean"]
+    std = scaler["std"]
+
+    # Infer
+    y = model.predict(X)
+    # y = infer(model, X)
+
+    # Print results
+    print(y)
+
 def main(filepath):
 
     # Load data
@@ -118,7 +149,11 @@ def main(filepath):
 
 if __name__ == '__main__':
 
-    # Load data
+    # Infer from csv-file
     filepath = sys.argv[1]
     main(filepath)
+
+    # Infer from csv-string passed on the command line
+    # string = "".join(sys.argv[1:])
+    # infer_from_string(string)
 
