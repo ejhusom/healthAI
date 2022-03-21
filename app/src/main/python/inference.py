@@ -119,22 +119,6 @@ def main(filepath):
 if __name__ == '__main__':
 
     # Load data
-    # filepath = "~/OneDrive/Datasets/Fitbit/fitbit_export_partners/original_data/fitbit_subject_01/Sleep/Heart Rate Variability Details - 2021-11-26.csv"
     filepath = sys.argv[1]
-    X = read_data_from_file(filepath)
+    main(filepath)
 
-    # Load model
-    model_filepath = "model.h5"
-    model = models.load_model(join(dirname(__file__), model_filepath))
-
-    # Load scaler
-    scaler = np.load(join(dirname(__file__), "scaler.npz"))
-    mean = scaler["mean"]
-    std = scaler["std"]
-
-    # Infer
-    y = model.predict(X)
-    # y = infer(model, X)
-
-    # Print results
-    print(y)
